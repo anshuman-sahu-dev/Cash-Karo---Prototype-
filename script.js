@@ -87,67 +87,69 @@ document.addEventListener("DOMContentLoaded", function () {
       if (cur === 4) showPlacedToastLater();
     }
 
-    function loadActivationCard() {
+    async function loadActivationCard() {
       const body = document.getElementById("ac-body");
-      body.innerHTML =
-        '<div class="sheet-handle"></div>' +
-        '<div style="text-align: center; padding: 20px 0;">' +
-        '<div style="margin-bottom:12px;"><img src="assets/Cashkaro Logo.png" style="height: 36px;" alt="CashKaro"></div>' +
-        '<div style="display:flex;justify-content:center;gap:6px;margin-bottom:16px;">' +
-        '<div class="pulse-dot" style="animation-delay:0s;"></div><div class="pulse-dot" style="animation-delay:0.2s;"></div><div class="pulse-dot" style="animation-delay:0.4s;"></div>' +
-        "</div>" +
-        '<div style="font-size: 0.9rem; color: var(--slate); font-weight: 600;">Hold on, activating your cashback...</div>' +
-        "</div>";
-      setTimeout(() => {
-        if (cur !== 2) return; // user navigated away before load finished
-        body.innerHTML =
-          '<div class="sheet-handle"></div>' +
-          '<div class="ac-row"><div class="ac-logo">UT</div>' +
-          "<div><div style=\"font-family:'Sora',sans-serif;font-weight:700;font-size:.9rem;\">Urban Threads</div>" +
-          '<div style="font-size:.72rem;color:var(--slate);">Aero Trail Runner · ₹2,849</div></div></div>' +
-          '<div class="ac-rate">₹142<small>Estimated cashback · 5% rate</small></div>' +
-          '<div style="background: rgba(39, 201, 63, 0.1); border: 1px dashed rgba(39, 201, 63, 0.4); border-radius: 8px; padding: 10px; margin: 12px 0; display: flex; align-items: center; justify-content: center; gap: 8px;">' +
-          '<span style="font-size: 1rem;">🎟️</span>' +
-          '<span style="color: #1e9d30; font-weight: 600; font-size: 0.85rem;">Coupon <span style="background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(39, 201, 63, 0.3); color: var(--ink); font-family: monospace;">SAVE20</span> copied!</span>' +
-          '</div>' +
-          '<div class="ac-note">Store-level rate shown exact product cashback may vary (FR3).</div>' +
-          '<div class="icon-btn primary" style="text-align:center;margin-top:10px;cursor:pointer;" id="btn-activate">Activate &amp; Continue →</div>';
-        const activateBtn = document.getElementById("btn-activate");
-        if (activateBtn) {
-          activateBtn.addEventListener("click", function () {
-            const isLoggedOut =
-              document.getElementById("otp-toggle") &&
-              document.getElementById("otp-toggle").checked;
-            if (isLoggedOut) {
-              document.getElementById("otp-overlay").classList.remove("d-none");
-              simulateOtp(function () {
-                cur = 3;
-                render();
-                clearTimeout(successTimer);
-                successTimer = setTimeout(() => {
-                  if (cur === 3) {
-                    cur = 4;
-                    render();
-                  }
-                }, 2500);
-              });
-            } else {
-              cur = 3;
+      body.innerHTML = `
+        <div class="sheet-handle"></div>
+        <div style="text-align: center; padding: 20px 0;">
+          <div style="margin-bottom:12px;"><img src="assets/Cashkaro Logo.png" style="height: 36px;" alt="CashKaro"></div>
+          <div style="display:flex;justify-content:center;gap:6px;margin-bottom:16px;">
+            <div class="pulse-dot" style="animation-delay:0s;"></div>
+            <div class="pulse-dot" style="animation-delay:0.2s;"></div>
+            <div class="pulse-dot" style="animation-delay:0.4s;"></div>
+          </div>
+          <div style="font-size: 0.9rem; color: var(--slate); font-weight: 600;">Hold on, activating your cashback...</div>
+        </div>
+      `;
+      
+      await sleep(650);
+      if (cur !== 2) return; // user navigated away before load finished
+      
+      body.innerHTML = `
+        <div class="sheet-handle"></div>
+        <div class="ac-row">
+          <div class="ac-logo">UT</div>
+          <div>
+            <div style="font-family:'Sora',sans-serif;font-weight:700;font-size:.9rem;">Urban Threads</div>
+            <div style="font-size:.72rem;color:var(--slate);">Aero Trail Runner · ₹2,849</div>
+          </div>
+        </div>
+        <div class="ac-rate">₹142<small>Estimated cashback · 5% rate</small></div>
+        <div style="background: rgba(39, 201, 63, 0.1); border: 1px dashed rgba(39, 201, 63, 0.4); border-radius: 8px; padding: 10px; margin: 12px 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <span style="font-size: 1rem;">🎟️</span>
+          <span style="color: #1e9d30; font-weight: 600; font-size: 0.85rem;">Coupon <span style="background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(39, 201, 63, 0.3); color: var(--ink); font-family: monospace;">SAVE20</span> copied!</span>
+        </div>
+        <div class="ac-note">Store-level rate shown exact product cashback may vary (FR3).</div>
+        <div class="icon-btn primary" style="text-align:center;margin-top:10px;cursor:pointer;" id="btn-activate">Activate &amp; Continue →</div>
+      `;
+      
+      const activateBtn = document.getElementById("btn-activate");
+      if (activateBtn) {
+        activateBtn.addEventListener("click", async function () {
+          const isLoggedOut =
+            document.getElementById("otp-toggle") &&
+            document.getElementById("otp-toggle").checked;
+            
+          if (isLoggedOut) {
+            document.getElementById("otp-overlay").classList.remove("d-none");
+            await simulateOtp();
+          }
+          
+          cur = 3;
+          render();
+          
+          clearTimeout(successTimer);
+          successTimer = setTimeout(() => {
+            if (cur === 3) {
+              cur = 4;
               render();
-              clearTimeout(successTimer);
-              successTimer = setTimeout(() => {
-                if (cur === 3) {
-                  cur = 4;
-                  render();
-                }
-              }, 2500);
             }
-          });
-        }
-      }, 650);
+          }, 2500);
+        });
+      }
     }
 
-    function simulateOtp(callback) {
+    async function simulateOtp() {
       const boxes = [
         document.getElementById("ob1"),
         document.getElementById("ob2"),
@@ -163,24 +165,20 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.style.background = "";
       btn.style.opacity = "0.5";
 
-      let step = 0;
-      const interval = setInterval(() => {
-        if (step < 4) {
-          boxes[step].textContent = Math.floor(Math.random() * 10);
-          boxes[step].classList.add("filled");
-          step++;
-        } else {
-          clearInterval(interval);
-          btn.textContent = "Verified!";
-          btn.style.background = "var(--mint)";
-          btn.style.borderColor = "var(--mint)";
-          btn.style.opacity = "1";
-          setTimeout(() => {
-            document.getElementById("otp-overlay").classList.add("d-none");
-            callback();
-          }, 600);
-        }
-      }, 250);
+      for (let i = 0; i < 4; i++) {
+        await sleep(250);
+        boxes[i].textContent = Math.floor(Math.random() * 10);
+        boxes[i].classList.add("filled");
+      }
+      
+      await sleep(250);
+      btn.textContent = "Verified!";
+      btn.style.background = "var(--mint)";
+      btn.style.borderColor = "var(--mint)";
+      btn.style.opacity = "1";
+      
+      await sleep(600);
+      document.getElementById("otp-overlay").classList.add("d-none");
     }
 
     function showPlacedToastLater() {
@@ -321,31 +319,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function renderLoading(note) {
-      document.getElementById("link-result").innerHTML =
-        '<div class="result-card loading"><div class="rc-logo skeleton" style="background:transparent;"></div>' +
-        '<div class="rc-text"><strong>' +
-        note +
-        "</strong><span>Resolving against the merchant eligibility table…</span></div></div>";
+      document.getElementById("link-result").innerHTML = `
+        <div class="result-card loading">
+          <div class="rc-logo skeleton" style="background:transparent;"></div>
+          <div class="rc-text">
+            <strong>${note}</strong>
+            <span>Resolving against the merchant eligibility table…</span>
+          </div>
+        </div>
+      `;
     }
 
     function renderOk(partner, domain) {
       const basePrice = Math.round(999 + Math.random() * 3000);
       const amount = Math.round(basePrice * (partner.rate / 100));
       
-      let html =
-        '<div class="result-card ok"><div class="rc-logo">' +
-        partner.logo +
-        "</div>" +
-        '<div class="rc-text"><strong>' +
-        partner.name +
-        " - eligible</strong><span>" +
-        domain +
-        " - store-level rate</span></div>" +
-        '<div class="rc-amt">₹' +
-        amount +
-        "<small>" +
-        partner.rate +
-        "% est.</small></div></div>";
+      let html = `
+        <div class="result-card ok">
+          <div class="rc-logo">${partner.logo}</div>
+          <div class="rc-text">
+            <strong>${partner.name} - eligible</strong>
+            <span>${domain} - store-level rate</span>
+          </div>
+          <div class="rc-amt">
+            ₹${amount}
+            <small>${partner.rate}% est.</small>
+          </div>
+        </div>
+      `;
 
       // Show better deal 70% of the time for prototype demonstration
       if (Math.random() > 0.3) {
@@ -355,22 +356,25 @@ document.addEventListener("DOMContentLoaded", function () {
         const compCb = Math.round(compPrice * (comp.rate / 100));
         const netPrice = compPrice - compCb;
 
-        html += 
-          '<div style="background: rgba(255, 178, 143, 0.1); border: 1px solid rgba(255, 90, 31, 0.3); border-radius: 12px; padding: 12px 16px; margin-top: 12px; position: relative; overflow: hidden; animation: slideUp 0.3s ease-out;">' +
-          '<div style="position: absolute; top: 0; right: 0; background: var(--orange); color: #fff; font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-bottom-left-radius: 8px; text-transform: uppercase;">Smart Compare</div>' +
-          '<div style="display: flex; gap: 12px; align-items: center;">' +
-          '<div class="rc-logo" style="width: 32px; height: 32px; font-size: 0.8rem; background: #fff;">' + comp.logo + '</div>' +
-          '<div style="flex: 1;">' +
-          '<div style="font-family: \'Sora\', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--ink);">Better Deal Found!</div>' +
-          '<div style="font-size: 0.75rem; color: var(--slate);">Identical item is cheaper on ' + comp.name + '</div>' +
-          '</div>' +
-          '<div style="text-align: right;">' +
-          '<div style="font-family: \'Space Mono\', monospace; font-weight: 700; font-size: 1rem; color: var(--green);">₹' + netPrice + '</div>' +
-          '<div style="font-size: 0.65rem; color: var(--slate);">Net Effective</div>' +
-          '</div>' +
-          '</div>' +
-          '<div class="icon-btn primary" style="width: 100%; padding: 8px; font-size: 0.85rem; margin-top: 10px; cursor: pointer; text-align: center;">Switch to ' + comp.name + ' →</div>' +
-          '</div>';
+        html += `
+          <div class="better-deal-card">
+            <div class="better-deal-badge">Smart Compare</div>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <div class="rc-logo" style="width: 32px; height: 32px; font-size: 0.8rem; background: #fff;">${comp.logo}</div>
+              <div style="flex: 1;">
+                <div style="font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--ink);">Better Deal Found!</div>
+                <div style="font-size: 0.75rem; color: var(--slate);">Identical item is cheaper on ${comp.name}</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-family: 'Space Mono', monospace; font-weight: 700; font-size: 1rem; color: var(--green);">₹${netPrice}</div>
+                <div style="font-size: 0.65rem; color: var(--slate);">Net Effective</div>
+              </div>
+            </div>
+            <div class="icon-btn primary" style="width: 100%; padding: 8px; font-size: 0.85rem; margin-top: 10px; cursor: pointer; text-align: center;">
+              Switch to ${comp.name} →
+            </div>
+          </div>
+        `;
       }
 
       document.getElementById("link-result").innerHTML = html;
@@ -378,20 +382,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderIneligible(domain) {
       const suggestion = PARTNERS[Math.floor(Math.random() * PARTNERS.length)];
-      document.getElementById("link-result").innerHTML =
-        '<div class="result-card bad"><div class="rc-logo" style="background:var(--red);">!</div>' +
-        '<div class="rc-text"><strong>Oops! We don\'t offer cashback for this store yet.</strong>' +
-        "<span>Try Amazon, Myntra, etc. or a similar store like <b>" +
-        suggestion.name +
-        "</b> (" +
-        suggestion.rate +
-        "% cashback).</span></div></div>";
+      document.getElementById("link-result").innerHTML = `
+        <div class="result-card bad">
+          <div class="rc-logo" style="background:var(--red);">!</div>
+          <div class="rc-text">
+            <strong>Oops! We don't offer cashback for this store yet.</strong>
+            <span>Try Amazon, Myntra, etc. or a similar store like <b>${suggestion.name}</b> (${suggestion.rate}% cashback).</span>
+          </div>
+        </div>
+      `;
     }
 
-    function simulateConsoleLogs(domain, isOk, cb) {
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    async function simulateConsoleLogs(domain, isOk, cb) {
       const vizContainer = document.getElementById("engine-viz-container");
       if (!vizContainer) {
-        setTimeout(cb, 700);
+        await sleep(700);
+        cb();
         return;
       }
 
@@ -405,15 +413,18 @@ document.addEventListener("DOMContentLoaded", function () {
       badges.forEach(b => { if (b) b.classList.remove("active"); });
 
       // Animate sequentially
-      setTimeout(() => { if(badges[0]) badges[0].classList.add("active"); }, 200);
-      setTimeout(() => { if(badges[1]) badges[1].classList.add("active"); }, 600);
-      setTimeout(() => { if(badges[2]) badges[2].classList.add("active"); }, 1000);
-      setTimeout(() => { if(badges[3]) badges[3].classList.add("active"); }, 1400);
+      await sleep(200);
+      if(badges[0]) badges[0].classList.add("active");
+      await sleep(400);
+      if(badges[1]) badges[1].classList.add("active");
+      await sleep(400);
+      if(badges[2]) badges[2].classList.add("active");
+      await sleep(400);
+      if(badges[3]) badges[3].classList.add("active");
 
       // Proceed after animation
-      setTimeout(() => {
-        cb();
-      }, 2000);
+      await sleep(600);
+      cb();
     }
 
     function handleSubmit(e) {
@@ -798,38 +809,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const rows = filtered();
       if (rows.length === 0) {
-        list.innerHTML =
-          '<div class="no-results">No cashback entries match this filter - try clearing search or filters.</div>';
+        list.innerHTML = `<div class="no-results">No cashback entries match this filter - try clearing search or filters.</div>`;
         return;
       }
       list.innerHTML = rows
-        .map((e) => {
-          return (
-            '<div class="ledger-card">' +
-            '<div class="li">' +
-            e.icon +
-            "</div>" +
-            '<div class="lmeta"><h6>' +
-            e.merchant +
-            "</h6>" +
-            '<span class="src ' +
-            srcClass(e.source) +
-            '">' +
-            srcLabel(e.source) +
-            "</span>" +
-            '<span style="font-size:.72rem;color:var(--slate);">' +
-            e.when +
-            "</span></div>" +
-            '<div class="lamt">₹' +
-            e.amount +
-            '<span class="status status-' +
-            e.status +
-            '">' +
-            e.status +
-            "</span></div>" +
-            "</div>"
-          );
-        })
+        .map((e) => `
+          <div class="ledger-card">
+            <div class="li">${e.icon}</div>
+            <div class="lmeta">
+              <h6>${e.merchant}</h6>
+              <span class="src ${srcClass(e.source)}">${srcLabel(e.source)}</span>
+              <span class="fs-xs text-slate">${e.when}</span>
+            </div>
+            <div class="lamt">
+              ₹${e.amount}
+              <span class="status status-${e.status}">${e.status}</span>
+            </div>
+          </div>
+        `)
         .join("");
     }
 

@@ -1765,3 +1765,41 @@ footer {
 }
 
 
+
+/* --- Humanized Utility & Semantic Classes --- */
+.font-sora { font-family: 'Sora', sans-serif; }
+.fw-bold { font-weight: 700; }
+.fs-sm { font-size: 0.85rem; }
+.fs-xs { font-size: 0.78rem; }
+.fs-md { font-size: 0.9rem; }
+.fs-lg { font-size: 1.1rem; }
+.text-slate { color: var(--slate); }
+.text-center { text-align: center; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 20px; }
+.mt-3 { margin-top: 12px; }
+.mt-4 { margin-top: 24px; }
+.flex-end { align-items: flex-end; }
+.z-30 { z-index: 30; }
+.w-100 { width: 100%; }
+.bg-transparent { background: none; border: none; }
+.flex-1 { flex: 1; }
+.d-flex { display: flex; }
+.justify-center { justify-content: center; }
+.gap-10 { gap: 10px; }
+.cursor-default { cursor: default; }
+
+/* Store Logo Variations */
+.store-logo {
+  object-fit: cover; 
+  background: #fff; 
+  border: 1px solid #e9e2d3; 
+  width: 44px; 
+  height: 44px; 
+  border-radius: 12px;
+}
+.store-logo.contain {
+  object-fit: contain;
+  padding: 4px;
+}
