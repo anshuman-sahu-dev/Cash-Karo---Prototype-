@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CashKaro - Cashback Autopilot Prototype</title>
+    <meta
+      name="description"
+      content="Interactive prototype: Share-to-Activate and Smart Session Nudge, built per the Cashback Autopilot PRD."
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <!-- ============ HEADER ============ -->
+    <header class="topband">
+      <div class="container">
+        <div class="brand mb-3">
+          <span class="cash">Cash</span><span class="karo">Karo</span>
+        </div>
+        <p class="eyebrow">
+          APM Product Assignment · Cashback Autopilot Prototype
+        </p>
+        <h1>Intercepting intent, not chasing memory.</h1>
+        <p class="lede">
+          A two-tap share-sheet activation for the moment a user has already
+          decided what to buy, paired with a tightly-gated nudge for intent that
+          dies inside CashKaro's own funnel. Built for a market where 74–85% of
+          shopping activity never leaves the mobile app.
+        </p>
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <span class="pill-stat"
+            >North star&nbsp;<b>Tracked orders / user / quarter</b></span
+          >
+          <span class="pill-stat"
+            >Cohort&nbsp;<b>Fixed, existing users</b></span
+          >
+          <span class="pill-stat"
+            >Platform&nbsp;<b>Android + iOS share sheet</b></span
+          >
+        </div>
+        
+        <div class="engine-viz-container" id="engine-viz-container">
+          <div class="radar-rings">
+            <div class="ring ring-1"></div>
+            <div class="ring ring-2"></div>
+            <div class="ring ring-3"></div>
+          </div>
+          <div class="engine-core">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="url(#bolt-grad)" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <defs>
+                <linearGradient id="bolt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffe9cc" />
+                  <stop offset="50%" stop-color="#ffb157" />
+                  <stop offset="100%" stop-color="#ff5a1f" />
+                </linearGradient>
+              </defs>
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="badge-pill badge-intent active" id="badge-intent">
+            <span class="dot dot-green"></span> Intent Tracked
+          </div>
+          <div class="badge-pill badge-edge active" id="badge-edge">
+            <span class="dot dot-red"></span> Awaiting Edge
+          </div>
+          <div class="badge-pill badge-session active" id="badge-session">
+            <span class="dot dot-blue"></span> Session Captured
+          </div>
+          <div class="badge-pill badge-nudge active" id="badge-nudge">
+            <span class="dot dot-yellow"></span> Nudge Armed
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ============ TAB NAV ============ -->
+    <nav class="tabbar" aria-label="Prototype sections">
+      <div class="container">
+        <div class="tabbar-inner" role="tablist">
+          <button
+            class="tabbtn active"
+            data-tab="t1"
+            role="tab"
+            aria-selected="true"
+          >
+            <span class="num">01</span>Share-to-Activate
+          </button>
+          <button class="tabbtn" data-tab="t2" role="tab" aria-selected="false">
+            <span class="num">02</span>Smart Session Nudge
+          </button>
+          <button class="tabbtn" data-tab="t3" role="tab" aria-selected="false">
+            <span class="num">03</span>My Cashback Ledger
+          </button>
+          <button class="tabbtn" data-tab="t4" role="tab" aria-selected="false">
+            <span class="num">04</span>Metrics &amp; Guardrails
+          </button>
+          <button class="tabbtn" data-tab="t5" role="tab" aria-selected="false">
+            <span class="num">05</span>Rollout &amp; GTM
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main" class="container stage">
+      <!-- ================= TAB 1 : SHARE-TO-ACTIVATE ================= -->
+      <section class="tabpane" id="pane-t1" aria-labelledby="tab-t1">
+        <div class="row">
+          <div class="col-lg-5 panel-left">
+            <p class="kicker">Primary flow · FR1–FR7</p>
+            <h2>Two taps, zero re-navigation.</h2>
+            <p class="desc">
+              The user is already inside a retailer's app with a product
+              decided. They tap Share, tap CashKaro, and continue checkout
+              exactly where they were - no app-switch, no re-search, no losing
+              the cart.
+            </p>
+
+            <div class="step-controls">
+              <button class="btn-flow" id="t1-next" type="button">
+                Start the guided flow →
+              </button>
+              <button class="btn-ghost" id="t1-reset" type="button">
+                Reset
+              </button>
+            </div>
+            <div class="step-track" id="t1-track"></div>
+            <div class="rationale-box" id="t1-rationale">
+              <span class="lbl">Why this screen</span>
+              A shopper on any retailer app finds a product. Today, converting
+              them means asking them to leave, remember, and re-search inside
+              CashKaro - three drop-off points before the value is delivered.
+            </div>
+
+            <!-- FR2–FR4: merchant eligibility resolver, with real validation states -->
+            <form class="link-form" id="link-form" novalidate>
+              <label for="link-input"
+                >Try it yourself - paste a product link</label
+              >
+              <div class="link-input-row">
+                <input
+                  type="text"
+                  id="link-input"
+                  placeholder="e.g. myntra.com/product/12345"
+                  autocomplete="off"
+                  aria-describedby="link-error"
+                />
+                <button class="btn-flow" type="submit" id="link-submit">
+                  Check
+                </button>
+              </div>
+              <div class="field-error" id="link-error" role="alert"></div>
+              <div class="chip-row">
+                <span
+                  class="chip"
+                  data-fill="https://www.myntra.com/shoes/nike/12345"
+                  >Partner link (Myntra)</span
+                >
+                <span class="chip" data-fill="https://bit.ly/3xR2Kfa"
+                  >Shortened link</span
+                >
+                <span
+                  class="chip"
+                  data-fill="https://www.randomlocalstore.com/item/9"
+                  >Non-partner link</span
+                >
+              </div>
+              <div class="result-box" id="link-result" aria-live="polite"></div>
+            </form>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="phone-wrap">
+              <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen" id="t1-screen">
+                  <div class="scr active" data-step="0">
+                    <div class="status-strip">
+                      <span>9:41</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="app-topbar">
+                      <strong
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-size: 0.85rem;
+                        "
+                        >Urban Threads</strong
+                      >
+                    </div>
+                    <div class="store-hero">
+                      <div
+                        class="imgblock"
+                        style="
+                          background: url(assets/running_shoe.png)
+                            center/cover no-repeat;
+                        "
+                      ></div>
+                      <div class="info">
+                        <h6>Aero Trail Runner</h6>
+                        <span class="price">₹2,849</span
+                        ><span class="strike">₹3,999</span>
+                      </div>
+                    </div>
+                    <div class="share-btn-row">
+                      <button class="icon-btn" type="button">♡ Wishlist</button>
+                      <button
+                        class="icon-btn primary"
+                        type="button"
+                        id="btn-share"
+                      >
+                        ↗ Share
+                      </button>
+                    </div>
+                    <div class="timer-note">
+                      Tap Share to see CashKaro appear in the native share sheet
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="1">
+                    <div class="status-strip">
+                      <span>9:41</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="app-topbar">
+                      <strong
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-size: 0.85rem;
+                        "
+                        >Urban Threads</strong
+                      >
+                    </div>
+                    <div class="store-hero">
+                      <div
+                        class="imgblock"
+                        style="
+                          background: url(assets/running_shoe.png)
+                            center/cover no-repeat;
+                        "
+                      ></div>
+                      <div class="info">
+                        <h6>Aero Trail Runner</h6>
+                        <span class="price">₹2,849</span
+                        ><span class="strike">₹3,999</span>
+                      </div>
+                    </div>
+                    <div class="sheet-overlay">
+                      <div class="sheet">
+                        <div class="sheet-handle"></div>
+                        <div class="sheet-title">Share via</div>
+                        <div class="approw">
+                          <div class="apptarget">
+                            <div class="appicon">💬</div>
+                            WhatsApp
+                          </div>
+                          <div class="apptarget">
+                            <div class="appicon">✉️</div>
+                            Mail
+                          </div>
+                          <button
+                            class="apptarget"
+                            type="button"
+                            id="btn-ck-icon"
+                            style="background: none; border: none"
+                          >
+                            <div class="appicon ck">CK</div>
+                            CashKaro
+                          </button>
+                          <div class="apptarget">
+                            <div class="appicon">⋯</div>
+                            More
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="2">
+                    <div class="status-strip">
+                      <span>9:41</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="app-topbar">
+                      <strong
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-size: 0.85rem;
+                        "
+                        >Urban Threads</strong
+                      >
+                    </div>
+                    <div class="store-hero">
+                      <div
+                        class="imgblock"
+                        style="
+                          background: url(assets/running_shoe.png)
+                            center/cover no-repeat;
+                        "
+                      ></div>
+                      <div class="info">
+                        <h6>Aero Trail Runner</h6>
+                        <span class="price">₹2,849</span
+                        ><span class="strike">₹3,999</span>
+                      </div>
+                    </div>
+                    <div class="sheet-overlay" style="align-items: flex-end">
+                      <div class="sheet activation-card" id="ac-body">
+                        <div class="sheet-handle"></div>
+                        <div
+                          class="skeleton"
+                          style="
+                            height: 40px;
+                            border-radius: 10px;
+                            margin-bottom: 12px;
+                          "
+                        ></div>
+                        <div
+                          class="skeleton"
+                          style="
+                            height: 60px;
+                            border-radius: 10px;
+                            margin-bottom: 12px;
+                          "
+                        ></div>
+                        <div
+                          class="skeleton"
+                          style="height: 44px; border-radius: 10px"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="3">
+                    <div class="confirm-wrap">
+                      <div class="check-circle">✓</div>
+                      <div
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-weight: 700;
+                        "
+                      >
+                        Cashback Activated!
+                      </div>
+                      <div
+                        style="
+                          font-size: 0.78rem;
+                          color: var(--slate);
+                          margin-bottom: 20px;
+                          text-align: center;
+                        "
+                      >
+                        Taking you back to the store...
+                      </div>
+                      <div
+                        class="icon-btn primary"
+                        id="btn-proceed-success"
+                        style="
+                          width: 100%;
+                          text-align: center;
+                          padding: 12px 0;
+                          font-size: 0.85rem;
+                        "
+                      >
+                        Proceed
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="4">
+                    <div class="status-strip">
+                      <span>9:42</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="track-pill" id="track-pill">
+                      <span>🟢 Cashback Active · 5%</span
+                      ><button type="button" aria-label="Dismiss">✕</button>
+                    </div>
+                    <div class="app-topbar" style="margin-top: 34px">
+                      <strong
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-size: 0.85rem;
+                        "
+                        >Urban Threads · Checkout</strong
+                      >
+                    </div>
+                    <div class="store-hero">
+                      <div
+                        class="imgblock"
+                        style="
+                          background: url(assets/running_shoe.png)
+                            center/cover no-repeat;
+                        "
+                      ></div>
+                      <div class="info">
+                        <h6>Aero Trail Runner</h6>
+                        <span class="price">₹2,849</span>
+                      </div>
+                    </div>
+                    <div class="share-btn-row">
+                      <button
+                        class="icon-btn primary"
+                        style="flex: 1"
+                        type="button"
+                        id="btn-place-order"
+                      >
+                        Place Order
+                      </button>
+                    </div>
+                    <div class="timer-note">
+                      User completes checkout inside the retailer's own app -
+                      CashKaro never takes over the screen.
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="5">
+                    <div class="lockscreen">
+                      <div class="time">9:44</div>
+                      <div class="date">Order tracked</div>
+                      <div class="notif-card">
+                        <div class="nlogo"></div>
+                        <div class="ntxt">
+                          <strong>CashKaro</strong
+                          ><span
+                            >✅ Order tracked at Urban Threads - ₹142 cashback
+                            pending, credited in 60–90 days.</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    id="otp-overlay"
+                    class="sheet-overlay d-none"
+                    style="align-items: flex-end; z-index: 30"
+                  >
+                    <div class="sheet activation-card">
+                      <div class="sheet-handle"></div>
+                      <div
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-weight: 700;
+                          font-size: 1.1rem;
+                          margin-bottom: 8px;
+                          text-align: center;
+                        "
+                      >
+                        Verify it's you
+                      </div>
+                      <div
+                        style="
+                          font-size: 0.8rem;
+                          color: var(--slate);
+                          margin-bottom: 16px;
+                          text-align: center;
+                        "
+                      >
+                        We sent a 4-digit code to your registered number to link
+                        your cashback.
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          gap: 10px;
+                          justify-content: center;
+                          margin-bottom: 24px;
+                        "
+                      >
+                        <div id="ob1" class="otp-box"></div>
+                        <div id="ob2" class="otp-box"></div>
+                        <div id="ob3" class="otp-box"></div>
+                        <div id="ob4" class="otp-box"></div>
+                      </div>
+                      <div
+                        class="icon-btn primary"
+                        style="
+                          width: 100%;
+                          text-align: center;
+                          font-size: 0.9rem;
+                          padding: 12px 0;
+                        "
+                        id="btn-otp-verify"
+                      >
+                        Verify &amp; Continue
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 2 : SMART SESSION NUDGE ================= -->
+      <section class="tabpane d-none" id="pane-t2" aria-labelledby="tab-t2">
+        <div class="row">
+          <div class="col-lg-5 panel-left">
+            <p class="kicker">Secondary flow · FR8–FR12, FR14</p>
+            <h2>One nudge, only when intent was real.</h2>
+            <p class="desc">
+              This never fires on a schedule or on app-open. It fires only when
+              a user viewed a specific store inside CashKaro and left without a
+              click-out - and it's capped hard to protect trust.
+            </p>
+            <div class="step-controls">
+              <button class="btn-flow" id="t2-next" type="button">
+                Start the guided flow →
+              </button>
+              <button class="btn-ghost" id="t2-reset" type="button">
+                Reset
+              </button>
+            </div>
+            <div class="step-track" id="t2-track"></div>
+            <div class="rationale-box" id="t2-rationale">
+              <span class="lbl">Guardrail built in</span>
+              Max 1 nudge per store/day, 2 per user/day, auto-mute after 3
+              non-converting sends. We watch app-opens-without-conversion as a
+              guardrail so this can't quietly turn into noise.
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="phone-wrap">
+              <div class="phone-frame">
+                <div class="phone-notch"></div>
+                <div class="phone-screen" id="t2-screen">
+                  <div class="scr active" data-step="0">
+                    <div class="status-strip">
+                      <span>6:02</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="app-topbar">
+                      <div class="brand dark" style="font-size: 1.1rem">
+                        <span class="cash">Cash</span
+                        ><span class="karo">Karo</span>
+                      </div>
+                    </div>
+                    <div class="searchbar">🔍 Search 6,000+ stores</div>
+                    <div class="home-list">
+                      <button
+                        class="store-row"
+                        type="button"
+                        id="btn-open-store"
+                        style="border: 1px solid #e9e2d3; text-align: left"
+                      >
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.nykaa.com&size=128"
+                          alt="Nykaa Beauty"
+                          style="object-fit: cover; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px;"
+                        />
+                        <div class="st">
+                          <h6>Nykaa Beauty</h6>
+                          <span>Skincare &amp; makeup</span>
+                        </div>
+                        <div class="rate">6% CB</div>
+                      </button>
+                      <div class="store-row" style="cursor: default">
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.myntra.com&size=128"
+                          alt="Myntra"
+                          style="object-fit: cover; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px;"
+                        />
+                        <div class="st">
+                          <h6>Myntra</h6>
+                          <span>Fashion</span>
+                        </div>
+                        <div class="rate">4% CB</div>
+                      </div>
+                      <div class="store-row" style="cursor: default">
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.croma.com&size=128"
+                          alt="Croma"
+                          style="object-fit: cover; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px;"
+                        />
+                        <div class="st">
+                          <h6>Croma</h6>
+                          <span>Electronics</span>
+                        </div>
+                        <div class="rate">2% CB</div>
+                      </div>
+                      <div class="store-row" style="cursor: default">
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.amazon.in&size=128"
+                          alt="Amazon"
+                          style="object-fit: cover; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px;"
+                        />
+                        <div class="st">
+                          <h6>Amazon</h6>
+                          <span>Shopping</span>
+                        </div>
+                        <div class="rate">3% CB</div>
+                      </div>
+                      <div class="store-row" style="cursor: default">
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.flipkart.com&size=128"
+                          alt="Flipkart"
+                          style="object-fit: contain; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px; padding: 4px;"
+                        />
+                        <div class="st">
+                          <h6>Flipkart</h6>
+                          <span>Shopping</span>
+                        </div>
+                        <div class="rate">2.5% CB</div>
+                      </div>
+                      <div class="store-row" style="cursor: default">
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.ajio.com&size=128"
+                          alt="Ajio"
+                          style="object-fit: cover; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px;"
+                        />
+                        <div class="st">
+                          <h6>Ajio</h6>
+                          <span>Fashion</span>
+                        </div>
+                        <div class="rate">5% CB</div>
+                      </div>
+                      <div class="store-row" style="cursor: default">
+                        <img
+                          class="sw"
+                          src="https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.swiggy.com&size=128"
+                          alt="Swiggy"
+                          style="object-fit: cover; background: #fff; border: 1px solid #e9e2d3; width: 44px; height: 44px; border-radius: 12px;"
+                        />
+                        <div class="st">
+                          <h6>Swiggy</h6>
+                          <span>Food</span>
+                        </div>
+                        <div class="rate">₹20 CB</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="1">
+                    <div class="status-strip">
+                      <span>6:02</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="app-topbar">
+                      <strong
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-size: 0.85rem;
+                        "
+                        >Nykaa Beauty</strong
+                      >
+                    </div>
+                    <div class="store-hero">
+                      <div
+                        class="imgblock"
+                        style="
+                          background: url(assets/nykaa_beauty.jpg)
+                            top/cover no-repeat;
+                        "
+                      ></div>
+                      <div class="info">
+                        <h6>6% Cashback · All categories</h6>
+                        <span style="font-size: 0.75rem; color: var(--slate)"
+                          >142 active coupons</span
+                        >
+                      </div>
+                    </div>
+                    <div class="share-btn-row">
+                      <button
+                        class="icon-btn primary"
+                        style="flex: 1"
+                        type="button"
+                        id="btn-clickout-1"
+                      >
+                        Shop Now → Click-out
+                      </button>
+                    </div>
+                    <div class="timer-note">
+                      User browses, then exits the app without tapping "Shop
+                      Now" - no click-out generated.
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="2">
+                    <div class="lockscreen">
+                      <div class="time">9:05</div>
+                      <div class="date">
+                        3 hrs later · no click-out, no order
+                      </div>
+                      <div class="notif-card" id="t2-notif-card">
+                        <div class="nlogo"></div>
+                        <div class="ntxt">
+                          <strong>CashKaro</strong
+                          ><span
+                            >Your 6% cashback on Nykaa Beauty is still active -
+                            pick up where you left off.</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="scr" data-step="3">
+                    <div class="status-strip">
+                      <span>9:06</span><span>●●● 5G 100%</span>
+                    </div>
+                    <div class="app-topbar">
+                      <strong
+                        style="
+                          font-family: &quot;Sora&quot;, sans-serif;
+                          font-size: 0.85rem;
+                        "
+                        >Nykaa Beauty</strong
+                      >
+                    </div>
+                    <div class="store-hero">
+                      <div
+                        class="imgblock"
+                        style="
+                          background: url(assets/nykaa_beauty.jpg) top/cover no-repeat;
+                        "
+                      >
+                      </div>
+                      <div class="info">
+                        <h6>6% Cashback · All categories</h6>
+                        <span style="font-size: 0.75rem; color: var(--slate)"
+                          >Deep-linked straight back - same page as before</span
+                        >
+                      </div>
+                    </div>
+                    <div class="share-btn-row">
+                      <button
+                        class="icon-btn primary"
+                        style="flex: 1"
+                        type="button"
+                        id="btn-clickout-3"
+                      >
+                        Shop Now → Click-out
+                      </button>
+                    </div>
+                    <div class="timer-note">
+                      Notification deep-links to the exact store page - not the
+                      CashKaro home screen.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FR10, FR12, FR14: functional guardrail / cap testing panel -->
+            <div class="guard-panel">
+              <h4>Test the guardrails</h4>
+              <div class="switch-row">
+                <div>
+                  <div class="lbl">Notifications enabled</div>
+                  <div class="sub">FR14 - if off, nudges silently no-op</div>
+                </div>
+                <label class="toggle">
+                  <input type="checkbox" id="notif-toggle" checked />
+                  <span class="track"></span>
+                </label>
+              </div>
+              <div class="cap-counters">
+                <div class="cap-box" id="cap-store">
+                  <div class="n">0/1</div>
+                  <div class="l">Store cap today</div>
+                </div>
+                <div class="cap-box" id="cap-user">
+                  <div class="n">0/2</div>
+                  <div class="l">User cap today</div>
+                </div>
+                <div class="cap-box" id="cap-streak">
+                  <div class="n">0/3</div>
+                  <div class="l">Non-converting streak</div>
+                </div>
+              </div>
+              <div class="step-controls" style="margin-top: 0">
+                <button
+                  class="btn-flow"
+                  id="btn-simulate-abandon"
+                  type="button"
+                >
+                  Simulate store view, no click-out
+                </button>
+                <button class="btn-ghost" id="btn-reset-caps" type="button">
+                  Reset caps
+                </button>
+              </div>
+              <div class="activity-log" id="activity-log"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3 : LEDGER ================= -->
+      <section class="tabpane d-none" id="pane-t3" aria-labelledby="tab-t3">
+        <p class="kicker">Trust surface · FR13</p>
+        <h2 class="mb-2">My Cashback - one ledger, every source.</h2>
+        <p class="desc mb-4" style="max-width: 640px">
+          Every order is tagged by how it was earned, so the team can see
+          whether Share-to-Activate and Nudge-recovery are adding orders, not
+          just relabeling ones that would have happened anyway.
+        </p>
+
+        <div class="ledger-toolbar">
+          <input
+            type="search"
+            id="ledger-search"
+            placeholder="Search by merchant…"
+            aria-label="Search ledger"
+          />
+          <div class="filter-group" id="filter-status">
+            <button
+              class="btn-ghost active"
+              data-filter-status="all"
+              type="button"
+            >
+              All statuses
+            </button>
+            <button
+              class="btn-ghost"
+              data-filter-status="pending"
+              type="button"
+            >
+              Pending
+            </button>
+            <button
+              class="btn-ghost"
+              data-filter-status="confirmed"
+              type="button"
+            >
+              Confirmed
+            </button>
+            <button
+              class="btn-ghost"
+              data-filter-status="credited"
+              type="button"
+            >
+              Credited
+            </button>
+          </div>
+          <div class="filter-group" id="filter-source">
+            <button
+              class="btn-ghost active"
+              data-filter-source="all"
+              type="button"
+            >
+              All sources
+            </button>
+            <button class="btn-ghost" data-filter-source="share" type="button">
+              Share-to-Activate
+            </button>
+            <button class="btn-ghost" data-filter-source="nudge" type="button">
+              Nudge-recovered
+            </button>
+            <button class="btn-ghost" data-filter-source="inapp" type="button">
+              In-app
+            </button>
+          </div>
+          <button class="btn-ghost ms-auto" id="t3-toggle-empty" type="button">
+            Preview first-time empty state
+          </button>
+        </div>
+
+        <div id="ledger-list"></div>
+        <div id="ledger-empty" class="d-none text-center py-5">
+          <div style="font-size: 2.4rem">🧾</div>
+          <h5 class="mt-2" style="font-family: &quot;Sora&quot;, sans-serif">
+            No cashback tracked yet
+          </h5>
+          <p class="text-muted" style="max-width: 340px; margin: 6px auto">
+            Share any product link to CashKaro from a retailer app, or shop from
+            the home screen, and it'll show up here.
+          </p>
+          <button class="btn-flow" type="button" id="empty-try-btn">
+            Try Share-to-Activate
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4 : METRICS ================= -->
+      <section class="tabpane d-none" id="pane-t4" aria-labelledby="tab-t4">
+        <p class="kicker">Internal view - not shown to consumers · Section 8</p>
+        <h2 class="mb-4">How we'd watch this in the first 4 weeks</h2>
+        <div class="row g-3 mb-3">
+          <div class="col-md-5">
+            <div class="northstar h-100">
+              <div class="lbl">North star · fixed cohort</div>
+              <div class="val display">2.4 → 3.1</div>
+              <div style="font-size: 0.85rem; color: #c7cbd6">
+                Tracked orders / existing user / quarter
+              </div>
+              <div class="sparkbar">
+                <i style="height: 35%"></i><i style="height: 42%"></i
+                ><i style="height: 38%"></i><i style="height: 55%"></i
+                ><i style="height: 70%; background: var(--mint)"></i
+                ><i style="height: 100%; background: var(--mint)"></i>
+              </div>
+              <div style="font-size: 0.72rem; color: #9aa0ab; margin-top: 6px">
+                Treatment cohort vs. 4-week holdout baseline
+              </div>
+            </div>
+          </div>
+          <div class="col-md-7">
+            <div class="row g-3 h-100">
+              <div class="col-sm-6">
+                <div class="kpi-card">
+                  <div class="lbl">Share-to-Activate conv.</div>
+                  <div class="val">38%</div>
+                  <div class="delta up">↑ activation → tracked order</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="kpi-card">
+                  <div class="lbl">Nudge → click-out rate</div>
+                  <div class="val">19%</div>
+                  <div class="delta up">↑ vs. 4% generic push baseline</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="kpi-card">
+                  <div class="lbl">Orders attributed to feature</div>
+                  <div class="val">27%</div>
+                  <div class="delta up">of cohort's quarter orders</div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="kpi-card">
+                  <div class="lbl">Opens-without-conversion</div>
+                  <div class="val" id="guardrail-val">6.2%</div>
+                  <div class="delta up" id="guardrail-delta">
+                    ↔ within guardrail band
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-controls mb-2">
+          <button class="btn-ghost" id="btn-simulate-breach" type="button">
+            Simulate a guardrail breach
+          </button>
+          <button class="btn-ghost" id="btn-reset-breach" type="button">
+            Reset to healthy
+          </button>
+        </div>
+        <div class="guardrail-box fine" id="guardrail-box">
+          <strong style="font-family: &quot;Sora&quot;, sans-serif"
+            >Guardrail we're watching hardest:</strong
+          >
+          app-opens-without-conversion after a nudge. Currently healthy -
+          click-out rate is holding steady alongside it.
+        </div>
+
+        <p class="section-note">
+          Every number above ladders back to the single outcome this assignment
+          defines: tracked orders per existing user per quarter, on a fixed
+          cohort. Feature-level metrics (activation rate, nudge CTR) are
+          diagnostic - they explain <em>why</em> the north star moved, they
+          don't replace it.
+        </p>
+      </section>
+
+      <!-- ================= TAB 5 : GTM ================= -->
+      <section class="tabpane d-none" id="pane-t5" aria-labelledby="tab-t5">
+        <p class="kicker">Section 11 · Rollout plan</p>
+        <h2 class="mb-4">
+          Who first, how we scale, and what would make us stop.
+        </h2>
+
+        <div class="gtm-stepper" id="gtm-stepper">
+          <div class="gtm-step active" data-step="0">
+            <span class="n">STAGE 1</span>
+            <h6>A/B Holdout</h6>
+            <p>50/50 split, 4 weeks</p>
+          </div>
+          <div class="gtm-step" data-step="1">
+            <span class="n">STAGE 2</span>
+            <h6>Segment rollout</h6>
+            <p>Repeat Mobile Shoppers, 100%</p>
+          </div>
+          <div class="gtm-step" data-step="2">
+            <span class="n">STAGE 3</span>
+            <h6>Merchant expansion</h6>
+            <p>Beyond top 20 by GMV</p>
+          </div>
+          <div class="gtm-step" data-step="3">
+            <span class="n">STAGE 4</span>
+            <h6>Full rollout</h6>
+            <p>Incl. Lapsed-but-active segment</p>
+          </div>
+        </div>
+
+        <div class="gtm-detail" id="gtm-detail"></div>
+
+        <div class="accordion mt-4" id="alt-accordion">
+          <h5
+            style="
+              font-family: &quot;Sora&quot;, sans-serif;
+              font-size: 1rem;
+              margin-bottom: 12px;
+            "
+          >
+            Alternatives we considered and rejected (Section 9)
+          </h5>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#alt1"
+              >
+                Home-screen widget
+              </button>
+            </h2>
+            <div
+              id="alt1"
+              class="accordion-collapse collapse"
+              data-bs-parent="#alt-accordion"
+            >
+              <div class="accordion-body">
+                Reduces friction to open the app, not to convert intent into a
+                tracked order. Its natural metric - app opens - is exactly the
+                kind the brief warns against: it can rise while transactions
+                don't.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#alt2"
+              >
+                Browser extension
+              </button>
+            </h2>
+            <div
+              id="alt2"
+              class="accordion-collapse collapse"
+              data-bs-parent="#alt-accordion"
+            >
+              <div class="accordion-body">
+                India's e-commerce activity is overwhelmingly mobile-app-native
+                - Flipkart and Amazon India each report over 85% of traffic from
+                their own apps. An extension addresses a shrinking, desktop-only
+                slice of the journey.
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#alt3"
+              >
+                Shopping agent / discovery assistant
+              </button>
+            </h2>
+            <div
+              id="alt3"
+              class="accordion-collapse collapse"
+              data-bs-parent="#alt-accordion"
+            >
+              <div class="accordion-body">
+                Solves pre-purchase discovery, not recovery of already-decided
+                purchases - a different problem than this brief defines.
+                Materially higher build cost and per-query latency for an
+                unproven benefit relative to Share-to-Activate.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      Prototype built for the CashKaro APM Intern assignment · illustrative
+      data, not connected to production systems
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
